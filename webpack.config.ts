@@ -81,6 +81,11 @@ module.exports = ({ development }:IDev) => ({
   ],
   resolve: {
     extensions: ['.ts', '.js', '.scss'],
+    alias: {
+      components: path.resolve(__dirname, 'src/components/'),
+      types: path.resolve(__dirname, 'src/types/'),
+      constants: path.resolve(__dirname, 'src/constants/'),
+    },
   },
   ...devServer(development)
 });

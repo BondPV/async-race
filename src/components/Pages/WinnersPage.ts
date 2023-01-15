@@ -1,4 +1,5 @@
-import ButtonsNav from './header/Buttons';
+import Header from './header/header';
+import Footer from './footer/footer';
 
 class WinnersPage {
   container: HTMLElement;
@@ -9,7 +10,8 @@ class WinnersPage {
   }
 
   private renderPage() {
-    new ButtonsNav(this.container);
+    new Header(this.container);
+    new Footer(this.container);
   }
 
   public removePage() {

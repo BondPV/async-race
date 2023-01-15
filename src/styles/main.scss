@@ -1,28 +1,193 @@
+html {
+  font-family: 'Electrolize', sans-serif;
+  box-sizing: border-box;
+  background-color: $bgc-color;
+  color: $text-color;
+  --car-width: 7rem;
+  --flag-width: 2.5rem;
+}
+
 body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  padding: 0 2rem;
 }
 
 .main {
   flex-grow: 1;
 }
 
-.nav {
+.header{
+  margin-top: 1rem;
   display: flex;
-  gap: 10px;
+  gap: 0.5rem;
   justify-content: center;
   align-items: center;
+  
+  &__image {
+    width: 6rem;
+  }
+}
 
-  &__btn {
-    padding: 10px;
-    width: 200px;
-    background-color: $main-color;
-    border-radius: 10px;
+.garage {
+  &__title {
+    text-align: center;
+  }
+
+  &__list {
+    margin-top: 1rem;
+  }
+  
+  &__car {
+    display: grid;
+    padding: 1rem;
+    padding-bottom: 0.5rem;
+    grid-template-columns: 1fr 6fr;
+    row-gap: 1rem;
+    column-gap: 0.5rem;
+    border-bottom: 4px dashed rgb(11, 8, 49);
+    background-color: $race-color;
+  }
+
+  &__buttons-selection {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    grid-column: 1 / 2;
+  }
+
+  &__buttons-controls {
+    display: flex;
+    gap: 0.5rem;
+    grid-column: 1 / 2;
+  }
+
+  &__name {
+    font-size: 1.5rem;
+  }
+
+  &__track {
+    position: relative;
+    grid-column: 2 / 3;
+  }
+
+  &__car-image {
+    position: absolute;
+    left: 0;
+    bottom: -1rem;
+    width: var(--car-width);
+    transition: left 0.3s linear;
+  }
+
+  &__flag-image {
+    position: absolute;
+    left: calc(100% - var(--car-width) - var(--flag-width));
+    width: var(--flag-width);
+    bottom: 0.3rem;
+    transform: rotate(25deg);
+  }
+}
+
+.settings {
+  position: relative;
+    display: grid;
+    gap: 1rem;
+    width: 30%;
+
+  &__field {
+    display: grid;
+    grid-template-columns: 6fr 1fr 2fr;
+    column-gap: 0.5rem;
+    width: 100%;
+  }
+
+  &__color {
+    height: 100%;
+  }
+
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.button {
+  color: $text-color2;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: $button-color3;
+  transition: 0.3s all;
+  cursor: pointer;
+
+  &:not(:disabled):hover {
+    background-color: $button-color2;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: auto;
+  }
+
+  &_header {
+    min-width: 10%;
     text-align: center;
     text-decoration: inherit;
+    background-color: $button-color1;
+  }
+
+  &_settings {
+    background-color: $button-color4;
+  }
+
+  &_car {
+    width: 50%;
+    background-color: $button-color5;
+  }
+}
+
+.pagination {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+
+  &__page {
+    width: 2rem;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+}
+
+.footer {
+  margin-top: 4rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  
+  &__logo {
+    height: auto;
+    width: 80px;
+    opacity: 0.5;
+    transition: 0.3s all;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__github {
+    text-decoration: inherit;
+    opacity: 0.5;
+    transition: 0.3s all;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:before {
+      content: '©';
+    }
   }
 }

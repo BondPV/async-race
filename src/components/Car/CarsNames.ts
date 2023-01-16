@@ -1,4 +1,4 @@
-export const carBrand = [
+export const carBrand: string[] = [
   'Alfa Romeo',
   'Aston Martin',
   'Audi',
@@ -57,7 +57,7 @@ export const carBrand = [
   'Volvo',
 ];
 
-export const carModel = [
+export const carModel: string[] = [
   'Emgrand EC7',
   'Atlas',
   'GX7',

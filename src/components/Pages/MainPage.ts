@@ -1,5 +1,6 @@
 import Header from './header/header';
 import Footer from './footer/footer';
+import { CarImage } from 'components/Car/CarImage';
 
 class MainPage {
   container: HTMLElement;
@@ -47,7 +48,7 @@ class MainPage {
             </div>
             <div class="garage__track">
               <div class="garage__car-image">
-                <img src="assets/car.svg" alt="car">
+                ${CarImage()}
               </div>
               <div class="garage__flag-image">
                 <img src="assets/flag.svg" alt="flag">

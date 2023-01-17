@@ -33,3 +33,10 @@ export interface IWinners {
   winners: IWinner[];
   count: string | null;
 }
+
+export interface IStorage {
+  cars: ICar[];
+  carsCount: number;
+  pageNumber: number;
+  carToUpdateId: number;
+}

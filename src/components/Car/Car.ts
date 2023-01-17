@@ -4,13 +4,13 @@ import { ICar } from 'types/interfaces';
 const DEFAULT_RANDOM_COUNT = 100;
 
 class Car {
-  private generateRandomCarName(): string {
+  private static generateRandomCarName(): string {
     const brand = carBrand[Math.floor(Math.random() * carBrand.length)];
     const model = carModel[Math.floor(Math.random() * carModel.length)];
     return `${brand} ${model}`;
   }
 
-  private generateRandomColor(): string {
+  private static generateRandomColor(): string {
     const letters = '0123456789ABCDEF';
     const sampleColor = '#ff0000';
     let color = '#';
@@ -22,7 +22,7 @@ class Car {
     return color;
   }
 
-  public generateRandomCars(count = DEFAULT_RANDOM_COUNT): ICar[] {
+  public static generateRandomCars(count = DEFAULT_RANDOM_COUNT): ICar[] {
     return new Array(count).fill(1).map(() => ({
       name: this.generateRandomCarName(),
       color: this.generateRandomColor(),

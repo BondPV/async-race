@@ -1,3 +1,5 @@
+import { twoFlagImage } from './twoFlagsImage';
+
 class Header {
   constructor(parentElement: HTMLElement) {
     const header = document.createElement('header');
@@ -5,7 +7,7 @@ class Header {
     header.innerHTML = `
       <a class="button button_header" href="#main">Main Page</a>
       <div class="header__image">
-        <img src="assets/2flags.svg" alt="flags">
+        ${twoFlagImage}
       </div>
       <a class="button button_header" href="#winners">Winners Page</a>
         `;

@@ -1,19 +1,9 @@
 import { ICar, ICars, IEngine, IDriveStatus, IWinner, IWinners } from 'types/interfaces';
 import { ModeEngine } from 'types/enums';
-import { BASE_URL, CARS_PER_PAGE, WINNERS_PER_PAGE } from 'constants/Constants';
+import { GARAGE_URL, ENGINE_URL, WINNERS_URL, CARS_PER_PAGE, WINNERS_PER_PAGE } from 'constants/Constants';
 
-const GARAGE_URL = `${BASE_URL}/garage`;
-const ENGINE_URL = `${BASE_URL}/engine`;
-const WINNERS_URL = `${BASE_URL}/winners`;
-
-class Requests {
-  baseUrl: string;
-
-  constructor() {
-    this.baseUrl = BASE_URL;
-  }
-
-  public async getsCars(page = 1): Promise<ICars | string> {
+class RequestsApi {
+  public async getsCars(page = 1): Promise<ICars> {
     const url = `${GARAGE_URL}?_page=${page}&_limit=${CARS_PER_PAGE}`;
 
     try {
@@ -31,16 +21,11 @@ class Requests {
         count,
       };
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async getCar(id: number): Promise<ICar | string> {
+  public async getCar(id: number): Promise<ICar> {
     const url = `${GARAGE_URL}/${id}`;
 
     try {
@@ -52,16 +37,11 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async createCar(car: ICar): Promise<ICar | string> {
+  public async createCar(car: ICar): Promise<ICar> {
     const url = `${GARAGE_URL}`;
 
     try {
@@ -79,16 +59,11 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async deleteCar(id: number): Promise<void | string> {
+  public async deleteCar(id: number): Promise<void> {
     const url = `${GARAGE_URL}/${id}`;
 
     try {
@@ -100,16 +75,11 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async updateCar(car: ICar): Promise<ICar | string> {
+  public async updateCar(car: ICar): Promise<ICar> {
     const url = `${GARAGE_URL}/${car.id}`;
     try {
       const response = await fetch(url, {
@@ -126,19 +96,14 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
   public async controlEngine(
     id: number,
     status: ModeEngine,
-  ): Promise<{ status: number; result: IEngine } | IDriveStatus | string> {
+  ): Promise<{ status: number; result: IEngine } | IDriveStatus> {
     const url = `${ENGINE_URL}?id=${id}&status=${status}`;
 
     try {
@@ -157,16 +122,11 @@ class Requests {
         };
       }
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async getWinners(page = 1, sort?: string | null, order?: string | null): Promise<IWinners | string> {
+  public async getWinners(page = 1, sort?: string | null, order?: string | null): Promise<IWinners> {
     const url = `${WINNERS_URL}?_page=${page}&_limit=${WINNERS_PER_PAGE}${this.getWinnersFilter(sort, order)}`;
     try {
       const response = await fetch(url, { method: 'GET' });
@@ -183,12 +143,7 @@ class Requests {
         count,
       };
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
@@ -196,7 +151,7 @@ class Requests {
     return sort && order ? `&_sort=${sort}&_order=${order}` : '';
   }
 
-  public async getWinner(id: number): Promise<IWinner | string> {
+  public async getWinner(id: number): Promise<IWinner> {
     const url = `${WINNERS_URL}/${id}`;
 
     try {
@@ -208,16 +163,11 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async createWinner(winner: IWinner): Promise<IWinner | string> {
+  public async createWinner(winner: IWinner): Promise<IWinner> {
     const url = `${WINNERS_URL}`;
 
     try {
@@ -234,16 +184,11 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async deleteWinner(id: number): Promise<void | string> {
+  public async deleteWinner(id: number): Promise<void> {
     const url = `${WINNERS_URL}/${id}`;
 
     try {
@@ -255,16 +200,11 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 
-  public async updateWinner(winner: IWinner): Promise<IWinner | string> {
+  public async updateWinner(winner: IWinner): Promise<IWinner> {
     const url = `${WINNERS_URL}/${winner.id}`;
     try {
       const response = await fetch(url, {
@@ -281,14 +221,9 @@ class Requests {
 
       return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        return error.message;
-      } else {
-        console.error('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+      throw new Error(`${error}`);
     }
   }
 }
 
-export default Requests;
+export default RequestsApi;

@@ -39,4 +39,7 @@ export interface IStorage {
   carsCount: number;
   pageNumber: number;
   carToUpdateId: number;
+  inputName: string;
+  inputColor: string;
+  inputColorDefault: string;
 }

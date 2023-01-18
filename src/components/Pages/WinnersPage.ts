@@ -1,6 +1,3 @@
-import Header from './header/header';
-import Footer from './footer/footer';
-
 class WinnersPage {
   container: HTMLElement;
 
@@ -9,10 +6,7 @@ class WinnersPage {
     this.renderPage();
   }
 
-  private renderPage() {
-    new Header(this.container);
-    new Footer(this.container);
-  }
+  private renderPage() {}
 
   public removePage() {
     this.container.innerHTML = '';

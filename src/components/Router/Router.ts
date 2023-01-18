@@ -2,14 +2,15 @@ import MainPage from 'components/Pages/MainPage';
 import WinnersPage from 'components/Pages/WinnersPage';
 import { Pages } from 'types/enums';
 
-const body = document.querySelector('body') as HTMLElement;
-
 class Router {
+  container: HTMLElement;
+
   private location: Location;
 
   private currentPage: MainPage | WinnersPage | null = null;
 
-  constructor() {
+  constructor(container: HTMLElement) {
+    this.container = container;
     this.location = window.location;
     this.setPage(this.location.hash.slice(1));
     this.hashChange();
@@ -28,12 +29,12 @@ class Router {
   private setPage(hash: string) {
     if (window.location.hash.length === 0 || hash === Pages.Main) {
       this.currentPage?.removePage();
-      this.currentPage = new MainPage(body);
+      this.currentPage = new MainPage(this.container);
     }
 
     if (hash === Pages.Winners) {
       this.currentPage?.removePage();
-      this.currentPage = new WinnersPage(body);
+      this.currentPage = new WinnersPage(this.container);
     }
   }
 }

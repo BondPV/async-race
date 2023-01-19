@@ -1,16 +1,15 @@
 import { carBrand, carModel } from './CarsNames';
 import { ICar } from 'types/interfaces';
-
-const DEFAULT_RANDOM_COUNT = 100;
+import { DEFAULT_RANDOM_COUNT } from 'constants/Constants';
 
 class Car {
-  private static generateRandomCarName(): string {
+  static generateRandomCarName(): string {
     const brand = carBrand[Math.floor(Math.random() * carBrand.length)];
     const model = carModel[Math.floor(Math.random() * carModel.length)];
     return `${brand} ${model}`;
   }
 
-  private static generateRandomColor(): string {
+  static generateRandomColor(): string {
     const letters = '0123456789ABCDEF';
     const sampleColor = '#ff0000';
     let color = '#';
@@ -22,7 +21,7 @@ class Car {
     return color;
   }
 
-  public static generateRandomCars(count = DEFAULT_RANDOM_COUNT): ICar[] {
+  static generateRandomCars(count = DEFAULT_RANDOM_COUNT): ICar[] {
     return new Array(count).fill(1).map(() => ({
       name: this.generateRandomCarName(),
       color: this.generateRandomColor(),

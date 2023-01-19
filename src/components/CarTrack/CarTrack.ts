@@ -46,7 +46,7 @@ class CarTrack {
     buttonSelect.innerText = 'Select';
 
     const buttonRemove = createElement(
-      'botton',
+      'button',
       ['button', 'button_car'],
       `remove-${this.car.id}`,
     ) as HTMLButtonElement;
@@ -62,11 +62,11 @@ class CarTrack {
     const buttonsControls = createElement('div', 'garage__buttons-controls');
 
     const buttonStart = createElement('button', 'button', `start-${this.car.id}`) as HTMLButtonElement;
-    buttonStart.innerText = 'start';
+    buttonStart.innerText = 'Start';
     buttonsControls.append(buttonStart);
 
     const buttonStop = createElement('button', 'button', `stop-${this.car.id}`) as HTMLButtonElement;
-    buttonStop.innerText = 'stop';
+    buttonStop.innerText = 'Stop';
     buttonStop.disabled = true;
     buttonsControls.append(buttonStop);
 

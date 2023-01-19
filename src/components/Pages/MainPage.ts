@@ -3,13 +3,17 @@ import Car from 'components/Car/Car';
 import createElement from 'components/helpers/createElement';
 import CarTrack from 'components/CarTrack/CarTrack';
 import RequestsApi from 'components/Api/RequestsApi';
+import Pagination from 'components/Pagination/Pagination';
 import { storage } from 'components/helpers/storage';
 import { disableForms } from 'components/helpers/disableForms';
+import { CARS_PER_PAGE } from 'constants/Constants';
 
 class MainPage {
   container: HTMLElement;
 
   main: HTMLElement;
+
+  pagination: Pagination;
 
   constructor(
     container: HTMLElement,
@@ -32,19 +36,22 @@ class MainPage {
     this.title.innerHTML = `Garage = ${storage.carsCount} =`;
     garage.append(this.title);
     garage.append(this.settings);
-    garage.append(this.createPagination());
+    this.pagination = new Pagination(CARS_PER_PAGE);
+    garage.append(this.pagination.render(storage.pageNumber, storage.carsCount));
 
     settings.append(this.createSettingsCreate());
     settings.append(this.createSettingsUpdate());
     settings.append(this.createSettingsButtons());
     this.init();
     this.addGarageListListener();
+    this.addPaginationListener();
   }
 
   private async init() {
     await this.garageGetCars(storage.pageNumber);
     await this.createGarageList(storage.cars);
     await this.garage.append(this.garageList);
+    this.pagination.render(storage.pageNumber, storage.carsCount);
     this.createTitle();
   }
 
@@ -137,27 +144,6 @@ class MainPage {
     return settingsButtons;
   }
 
-  private createPagination(): HTMLElement {
-    const pagination = createElement('div', 'pagination');
-
-    const buttonPrev = createElement('button') as HTMLButtonElement;
-    buttonPrev.innerText = 'Prev';
-    buttonPrev.disabled = true;
-
-    const paginationPageNum = createElement('div', 'pagination__page');
-    paginationPageNum.innerHTML = `${storage.pageNumber}`;
-
-    const buttonNext = createElement('button') as HTMLButtonElement;
-    buttonNext.innerText = 'Next';
-    buttonNext.disabled = true;
-
-    pagination.append(buttonPrev);
-    pagination.append(paginationPageNum);
-    pagination.append(buttonNext);
-
-    return pagination;
-  }
-
   private async garageGetCars(page: number) {
     const data = await this.requestApi.getsCars(page);
     storage.cars = data.cars;
@@ -231,6 +217,18 @@ class MainPage {
     disableForms(this.settingsUpdateForm, false);
     this.inputNameUpdate.value = car.name;
     this.inputColorUpdate.value = car.color;
+  }
+
+  private addPaginationListener() {
+    this.pagination.buttonPrev.addEventListener('click', () => {
+      storage.pageNumber -= 1;
+      this.init();
+    });
+
+    this.pagination.buttonNext.addEventListener('click', () => {
+      storage.pageNumber += 1;
+      this.init();
+    });
   }
 
   public removePage() {

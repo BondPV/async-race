@@ -90,16 +90,24 @@ class CarTrack {
   public async startCarEngine(id: number): Promise<void> {
     const data = await RequestsApi.controlEngine(id, ModeEngine.start);
     if (data.status === 200) {
-      storage.carToDriveStatus[`driveId${id}`] = true;
-      this.buttonStart.disabled = true;
-      this.buttonStop.disabled = false;
-      this.buttonSelect.disabled = true;
-      this.buttonRemove.disabled = true;
       const { result } = data;
       const time = result.distance / result.velocity;
-      this.animateCar(time);
+      this.startDrive(id, time);
       await this.switchEngineToDriveMode(id);
     }
+  }
+
+  public startDrive(id: number, time: number) {
+    storage.carToDriveStatus[`driveId${id}`] = true;
+    this.startDriveButtonDisabled();
+    this.animateCar(time);
+  }
+
+  public startDriveButtonDisabled() {
+    this.buttonStart.disabled = true;
+    this.buttonStop.disabled = false;
+    this.buttonSelect.disabled = true;
+    this.buttonRemove.disabled = true;
   }
 
   public async stopCarEngine(id: number): Promise<void> {
@@ -115,7 +123,7 @@ class CarTrack {
     }
   }
 
-  private async switchEngineToDriveMode(id: number): Promise<void> {
+  public async switchEngineToDriveMode(id: number): Promise<void> {
     const data = await RequestsApi.switchEngineToDriveMode(id);
     if (!data.success && storage.carToDriveStatus[`driveId${id}`] === true) {
       storage.carToDriveStatus[`driveId${id}`] = false;

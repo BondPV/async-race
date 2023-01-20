@@ -1,4 +1,4 @@
-import { ICar } from 'types/interfaces';
+import { ICar, IEngine } from 'types/interfaces';
 import Car from 'components/Car/Car';
 import createElement from 'components/helpers/createElement';
 import CarTrack from 'components/CarTrack/CarTrack';
@@ -7,6 +7,7 @@ import Pagination from 'components/Pagination/Pagination';
 import { storage } from 'components/helpers/storage';
 import { disableForms } from 'components/helpers/disableForms';
 import { CARS_PER_PAGE } from 'constants/Constants';
+import { ModeEngine } from 'types/enums';
 
 class MainPage {
   container: HTMLElement;
@@ -147,17 +148,10 @@ class MainPage {
   private createGarageList(cars: ICar[]): HTMLElement {
     this.garageList.innerHTML = '';
 
-    //const garageCars: HTMLElement[] = cars.map((car) => new CarTrack(car).render());
-
     cars.forEach((car, i) => {
       this.carTracksToPage[i] = new CarTrack(car);
       this.garageList.append(this.carTracksToPage[i].render());
     });
-
-    console.log(this.carTracksToPage);
-    // garageCars.forEach((car) => {
-    //   this.garageList.append(car);
-    // });
 
     return this.garageList;
   }
@@ -267,14 +261,26 @@ class MainPage {
   }
 
   private addButtonRaceListener() {
-    this.buttonRace.addEventListener('click', () => {
-      this.carTracksToPage.forEach((carTrack) => {
-        carTrack.startCarEngine(Number(carTrack.car.id));
-      });
-      this.buttonRace.disabled = true;
+    this.buttonRace.addEventListener('click', async () => {
+      const requests: Promise<{ status: number; result: IEngine }>[] = [];
+
       this.buttonReset.disabled = false;
+      this.buttonRace.disabled = true;
       this.buttonCreate.disabled = true;
       this.buttonRandom.disabled = true;
+
+      this.carTracksToPage.forEach((carTrack) => {
+        carTrack.startDriveButtonDisabled();
+        requests.push(RequestsApi.controlEngine(Number(carTrack.car.id), ModeEngine.start));
+      });
+      const data = await Promise.all(requests);
+
+      this.carTracksToPage.forEach((carTrack, i) => {
+        const { result } = data[i];
+        const time = result.distance / result.velocity;
+        carTrack.startDrive(Number(carTrack.car.id), time);
+        carTrack.switchEngineToDriveMode(Number(carTrack.car.id));
+      });
     });
   }
 

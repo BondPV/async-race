@@ -15,9 +15,16 @@ class MainPage {
 
   pagination: Pagination;
 
+  buttonRace: HTMLButtonElement;
+
+  buttonReset: HTMLButtonElement;
+
+  buttonRandom: HTMLButtonElement;
+
+  carTracksToPage: CarTrack[];
+
   constructor(
     container: HTMLElement,
-    private requestApi = new RequestsApi(),
     private title = createElement('h1', 'garage__title'),
     private garage = createElement('div', 'garage'),
     private garageList = createElement('div', 'garage__list') as HTMLDivElement,
@@ -25,8 +32,11 @@ class MainPage {
     private settingsCreateForm = createElement('form', 'settings__field') as HTMLFormElement,
     private settingsUpdateForm = createElement('form', 'settings__field') as HTMLFormElement,
 
+    private inputNameCreate = createElement('input', 'settings__data') as HTMLInputElement,
+    private inputColorCreate = createElement('input', 'settings__color') as HTMLInputElement,
     private inputNameUpdate = createElement('input', 'settings__data') as HTMLInputElement,
     private inputColorUpdate = createElement('input', 'settings__color') as HTMLInputElement,
+    private buttonCreate = createElement('button', ['button', 'button_settings']) as HTMLButtonElement,
     private buttonUpdate = createElement('button', ['button', 'button_settings']) as HTMLButtonElement,
   ) {
     this.container = container;
@@ -39,12 +49,25 @@ class MainPage {
     this.pagination = new Pagination(CARS_PER_PAGE);
     garage.append(this.pagination.render(storage.pageNumber, storage.carsCount));
 
+    this.buttonRace = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
+    this.buttonReset = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
+    this.buttonRandom = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
+
     settings.append(this.createSettingsCreate());
     settings.append(this.createSettingsUpdate());
     settings.append(this.createSettingsButtons());
+
     this.init();
+
     this.addGarageListListener();
     this.addPaginationListener();
+    this.addButtonCreateListener();
+    this.addButtonUpdateListener();
+    this.addButtomRandomListener();
+    this.addButtonRaceListener();
+    this.addButtonResetListener();
+
+    this.carTracksToPage = [];
   }
 
   private async init() {
@@ -61,37 +84,25 @@ class MainPage {
   }
 
   private createSettingsCreate(): HTMLElement {
-    const inputNameCreate = createElement('input', 'settings__data') as HTMLInputElement;
-    inputNameCreate.type = 'name';
-    inputNameCreate.placeholder = 'car name';
-    inputNameCreate.value = storage.inputName;
-    inputNameCreate.required = true;
-    inputNameCreate.addEventListener('change', () => {
-      storage.inputName = inputNameCreate.value;
+    this.inputNameCreate.type = 'name';
+    this.inputNameCreate.placeholder = 'car name';
+    this.inputNameCreate.value = storage.inputName;
+    this.inputNameCreate.required = true;
+    this.inputNameCreate.addEventListener('change', () => {
+      storage.inputName = this.inputNameCreate.value;
     });
 
-    const inputColorCreate = createElement('input', 'settings__color') as HTMLInputElement;
-    inputColorCreate.type = 'color';
-    inputColorCreate.value = storage.inputColor;
-    inputColorCreate.addEventListener('change', () => {
-      storage.inputColor = inputColorCreate.value;
+    this.inputColorCreate.type = 'color';
+    this.inputColorCreate.value = storage.inputColor;
+    this.inputColorCreate.addEventListener('change', () => {
+      storage.inputColor = this.inputColorCreate.value;
     });
 
-    const buttonCreate = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
-    buttonCreate.innerText = 'Create';
+    this.buttonCreate.innerText = 'Create';
 
-    buttonCreate.addEventListener('click', async () => {
-      if (this.settingsCreateForm.checkValidity() === true) {
-        await this.createCar({
-          name: inputNameCreate.value,
-          color: inputColorCreate.value,
-        });
-      }
-    });
-
-    this.settingsCreateForm.append(inputNameCreate);
-    this.settingsCreateForm.append(inputColorCreate);
-    this.settingsCreateForm.append(buttonCreate);
+    this.settingsCreateForm.append(this.inputNameCreate);
+    this.settingsCreateForm.append(this.inputColorCreate);
+    this.settingsCreateForm.append(this.buttonCreate);
 
     return this.settingsCreateForm;
   }
@@ -101,16 +112,6 @@ class MainPage {
     this.inputNameUpdate.required = true;
     this.inputColorUpdate.type = 'color';
     this.buttonUpdate.innerText = 'Update';
-
-    this.buttonUpdate.addEventListener('click', async () => {
-      if (this.settingsUpdateForm.checkValidity() === true) {
-        await this.updateCar({
-          name: this.inputNameUpdate.value,
-          color: this.inputColorUpdate.value,
-          id: storage.carToUpdateId,
-        });
-      }
-    });
 
     this.settingsUpdateForm.append(this.inputNameUpdate);
     this.settingsUpdateForm.append(this.inputColorUpdate);
@@ -123,29 +124,22 @@ class MainPage {
   private createSettingsButtons(): HTMLElement {
     const settingsButtons = createElement('div', 'settings__buttons');
 
-    const buttonRace = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
-    buttonRace.innerText = 'Race';
+    this.buttonRace.innerText = 'Race';
 
-    const buttonReset = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
-    buttonReset.innerText = 'Update';
-    buttonReset.disabled = true;
+    this.buttonReset.innerText = 'Reset';
+    this.buttonReset.disabled = true;
 
-    const buttonRandom = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
-    buttonRandom.innerText = 'Generate cars';
+    this.buttonRandom.innerText = 'Generate cars';
 
-    settingsButtons.append(buttonRace);
-    settingsButtons.append(buttonReset);
-    settingsButtons.append(buttonRandom);
-
-    buttonRandom.addEventListener('click', () => {
-      this.generateRandomCars();
-    });
+    settingsButtons.append(this.buttonRace);
+    settingsButtons.append(this.buttonReset);
+    settingsButtons.append(this.buttonRandom);
 
     return settingsButtons;
   }
 
   private async garageGetCars(page: number) {
-    const data = await this.requestApi.getsCars(page);
+    const data = await RequestsApi.getsCars(page);
     storage.cars = data.cars;
     storage.carsCount = Number(data.count);
   }
@@ -153,17 +147,24 @@ class MainPage {
   private createGarageList(cars: ICar[]): HTMLElement {
     this.garageList.innerHTML = '';
 
-    const garageCars: HTMLElement[] = cars.map((car) => new CarTrack(car)).map((car) => car.render());
+    //const garageCars: HTMLElement[] = cars.map((car) => new CarTrack(car).render());
 
-    garageCars.forEach((car) => {
-      this.garageList.append(car);
+    cars.forEach((car, i) => {
+      this.carTracksToPage[i] = new CarTrack(car);
+      this.garageList.append(this.carTracksToPage[i].render());
     });
+
+    console.log(this.carTracksToPage);
+    // garageCars.forEach((car) => {
+    //   this.garageList.append(car);
+    // });
 
     return this.garageList;
   }
 
   private addGarageListListener() {
     this.garageList.addEventListener('click', (event) => {
+      event.preventDefault();
       const target = event.target;
 
       if (target instanceof HTMLElement && target.id.includes('remove')) {
@@ -179,12 +180,12 @@ class MainPage {
   }
 
   private createCar(car: ICar): void {
-    this.requestApi.createCar(car);
+    RequestsApi.createCar(car);
     this.init();
   }
 
   private async updateCar(car: ICar): Promise<void> {
-    await this.requestApi.updateCar(car);
+    await RequestsApi.updateCar(car);
     disableForms(this.settingsUpdateForm, true);
     disableForms(this.settingsCreateForm, false);
     this.inputNameUpdate.value = '';
@@ -196,22 +197,23 @@ class MainPage {
     const randomCars = Car.generateRandomCars();
 
     randomCars.forEach((car) => {
-      this.requestApi.createCar(car);
+      RequestsApi.createCar(car);
     });
 
     this.init();
   }
 
   private async garageRemoveCar(id: number): Promise<void> {
-    await this.requestApi.deleteCar(id);
+    await RequestsApi.deleteCar(id);
+    delete storage.carToDriveStatus[`driveId${id}`];
     this.init();
   }
 
   private async garageSelectCar(id: number) {
     disableForms(this.settingsCreateForm, true);
 
-    const car: ICar = await this.requestApi.getCar(id);
-    await this.requestApi.updateCar(car);
+    const car: ICar = await RequestsApi.getCar(id);
+    await RequestsApi.updateCar(car);
     storage.carToUpdateId = Number(car.id);
 
     disableForms(this.settingsUpdateForm, false);
@@ -228,6 +230,63 @@ class MainPage {
     this.pagination.buttonNext.addEventListener('click', () => {
       storage.pageNumber += 1;
       this.init();
+    });
+  }
+
+  private addButtonCreateListener() {
+    this.buttonCreate.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      if (this.settingsCreateForm.checkValidity() === true) {
+        await this.createCar({
+          name: this.inputNameCreate.value,
+          color: this.inputColorCreate.value,
+        });
+      }
+    });
+  }
+
+  private addButtonUpdateListener() {
+    this.buttonUpdate.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      if (this.settingsUpdateForm.checkValidity() === true) {
+        await this.updateCar({
+          name: this.inputNameUpdate.value,
+          color: this.inputColorUpdate.value,
+          id: storage.carToUpdateId,
+        });
+      }
+    });
+  }
+
+  private addButtomRandomListener() {
+    this.buttonRandom.addEventListener('click', () => {
+      this.generateRandomCars();
+    });
+  }
+
+  private addButtonRaceListener() {
+    this.buttonRace.addEventListener('click', () => {
+      this.carTracksToPage.forEach((carTrack) => {
+        carTrack.startCarEngine(Number(carTrack.car.id));
+      });
+      this.buttonRace.disabled = true;
+      this.buttonReset.disabled = false;
+      this.buttonCreate.disabled = true;
+      this.buttonRandom.disabled = true;
+    });
+  }
+
+  private addButtonResetListener() {
+    this.buttonReset.addEventListener('click', () => {
+      this.carTracksToPage.forEach((carTrack) => {
+        carTrack.stopCarEngine(Number(carTrack.car.id));
+      });
+      this.buttonRace.disabled = false;
+      this.buttonReset.disabled = true;
+      this.buttonCreate.disabled = false;
+      this.buttonRandom.disabled = false;
     });
   }
 

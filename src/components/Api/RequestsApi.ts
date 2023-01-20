@@ -3,7 +3,7 @@ import { ModeEngine } from 'types/enums';
 import { GARAGE_URL, ENGINE_URL, WINNERS_URL, CARS_PER_PAGE, WINNERS_PER_PAGE } from 'constants/Constants';
 
 class RequestsApi {
-  public async getsCars(page = 1): Promise<ICars> {
+  static async getsCars(page = 1): Promise<ICars> {
     const url = `${GARAGE_URL}?_page=${page}&_limit=${CARS_PER_PAGE}`;
 
     try {
@@ -25,7 +25,7 @@ class RequestsApi {
     }
   }
 
-  public async getCar(id: number): Promise<ICar> {
+  static async getCar(id: number): Promise<ICar> {
     const url = `${GARAGE_URL}/${id}`;
 
     try {
@@ -41,7 +41,7 @@ class RequestsApi {
     }
   }
 
-  public async createCar(car: ICar): Promise<ICar> {
+  static async createCar(car: ICar): Promise<ICar> {
     const url = `${GARAGE_URL}`;
 
     try {
@@ -63,7 +63,7 @@ class RequestsApi {
     }
   }
 
-  public async deleteCar(id: number): Promise<void> {
+  static async deleteCar(id: number): Promise<void> {
     const url = `${GARAGE_URL}/${id}`;
 
     try {
@@ -79,7 +79,7 @@ class RequestsApi {
     }
   }
 
-  public async updateCar(car: ICar): Promise<ICar> {
+  static async updateCar(car: ICar): Promise<ICar> {
     const url = `${GARAGE_URL}/${car.id}`;
     try {
       const response = await fetch(url, {
@@ -100,10 +100,10 @@ class RequestsApi {
     }
   }
 
-  public async controlEngine(
+  static async controlEngine(
     id: number,
-    status: ModeEngine,
-  ): Promise<{ status: number; result: IEngine } | IDriveStatus> {
+    status: ModeEngine.start | ModeEngine.stop,
+  ): Promise<{ status: number; result: IEngine }> {
     const url = `${ENGINE_URL}?id=${id}&status=${status}`;
 
     try {
@@ -113,20 +113,33 @@ class RequestsApi {
         throw new Error(`Error! status: ${response.status}`);
       }
 
-      if (status === ModeEngine.drive) {
-        return { success: true };
-      } else {
-        return {
-          status: response.status,
-          result: await response.json(),
-        };
-      }
+      return {
+        status: response.status,
+        result: await response.json(),
+      };
     } catch (error) {
       throw new Error(`${error}`);
     }
   }
 
-  public async getWinners(page = 1, sort?: string | null, order?: string | null): Promise<IWinners> {
+  static async switchEngineToDriveMode(id: number): Promise<IDriveStatus> {
+    const url = `${ENGINE_URL}?id=${id}&status=${ModeEngine.drive}`;
+
+    try {
+      const response = await fetch(url, { method: 'PATCH' });
+
+      if (!response.ok) {
+        //throw new Error(`Error! status: ${response.status}`);
+        return { success: false };
+      }
+
+      return { success: true };
+    } catch (error) {
+      throw new Error(`${error}`);
+    }
+  }
+
+  static async getWinners(page = 1, sort?: string | null, order?: string | null): Promise<IWinners> {
     const url = `${WINNERS_URL}?_page=${page}&_limit=${WINNERS_PER_PAGE}${this.getWinnersFilter(sort, order)}`;
     try {
       const response = await fetch(url, { method: 'GET' });
@@ -147,11 +160,11 @@ class RequestsApi {
     }
   }
 
-  private getWinnersFilter(sort?: string | null, order?: string | null): string {
+  static getWinnersFilter(sort?: string | null, order?: string | null): string {
     return sort && order ? `&_sort=${sort}&_order=${order}` : '';
   }
 
-  public async getWinner(id: number): Promise<IWinner> {
+  static async getWinner(id: number): Promise<IWinner> {
     const url = `${WINNERS_URL}/${id}`;
 
     try {
@@ -167,7 +180,7 @@ class RequestsApi {
     }
   }
 
-  public async createWinner(winner: IWinner): Promise<IWinner> {
+  static async createWinner(winner: IWinner): Promise<IWinner> {
     const url = `${WINNERS_URL}`;
 
     try {
@@ -188,7 +201,7 @@ class RequestsApi {
     }
   }
 
-  public async deleteWinner(id: number): Promise<void> {
+  static async deleteWinner(id: number): Promise<void> {
     const url = `${WINNERS_URL}/${id}`;
 
     try {
@@ -204,7 +217,7 @@ class RequestsApi {
     }
   }
 
-  public async updateWinner(winner: IWinner): Promise<IWinner> {
+  static async updateWinner(winner: IWinner): Promise<IWinner> {
     const url = `${WINNERS_URL}/${winner.id}`;
     try {
       const response = await fetch(url, {

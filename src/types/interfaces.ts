@@ -1,3 +1,5 @@
+import { CarToDriveStatusType } from 'types/types';
+
 export interface IQueryParams {
   key: string;
   value: number | string;
@@ -39,6 +41,7 @@ export interface IStorage {
   carsCount: number;
   pageNumber: number;
   carToUpdateId: number;
+  carToDriveStatus: CarToDriveStatusType;
   inputName: string;
   inputColor: string;
   inputColorDefault: string;

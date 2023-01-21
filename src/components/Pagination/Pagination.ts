@@ -30,37 +30,16 @@ class Pagination {
     }
 
     this.buttonPrev.innerText = 'Prev';
-    this.buttonPrev.disabled = true;
 
     this.paginationPageNum.innerHTML = `${pageNumber} | ${this.quantityPage}`;
 
     this.buttonNext.innerText = 'Next';
-    this.buttonPrev.disabled = true;
-
-    this.disabledButton(pageNumber, this.quantityPage);
 
     this.pagination.append(this.buttonPrev);
     this.pagination.append(this.paginationPageNum);
     this.pagination.append(this.buttonNext);
 
     return this.pagination;
-  }
-
-  public disabledButton(pageNumber: number, quantityPage: number) {
-    if (pageNumber === 1 && quantityPage === 1) {
-      this.buttonPrev.disabled = true;
-      this.buttonNext.disabled = true;
-    }
-
-    if (pageNumber === quantityPage && quantityPage > 1) {
-      this.buttonPrev.disabled = false;
-      this.buttonNext.disabled = true;
-    }
-
-    if (pageNumber > 1 && pageNumber < quantityPage) {
-      this.buttonPrev.disabled = false;
-      this.buttonNext.disabled = false;
-    }
   }
 }
 

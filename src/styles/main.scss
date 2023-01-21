@@ -82,6 +82,7 @@ main {
     bottom: -1rem;
     width: var(--car-width);
     transition: left 0.3s linear;
+    z-index: 2;
 
     svg {
       -webkit-filter: drop-shadow( 0px 3px 2px #000 );
@@ -95,6 +96,17 @@ main {
     width: var(--flag-width);
     bottom: 0.3rem;
     transform: rotate(25deg);
+  }
+}
+
+.check-engine {
+  &:before {
+    content: '\1F525';
+    font-size: 2rem;
+    color: red;
+    position: absolute;
+    top: -1rem;
+    right: -1rem;
   }
 }
 
@@ -209,6 +221,7 @@ main {
   justify-content: center;
   align-items: center;
   background-color: rgba($color: #ffffff, $alpha: 0.5);
+  z-index: 100;
 
   
   &__wrap {

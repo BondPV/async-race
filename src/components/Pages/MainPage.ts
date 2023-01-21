@@ -217,13 +217,17 @@ class MainPage {
 
   private addPaginationListener() {
     this.pagination.buttonPrev.addEventListener('click', () => {
-      storage.pageNumber -= 1;
-      this.init();
+      if (storage.pageNumber > 1) {
+        storage.pageNumber -= 1;
+        this.init();
+      }
     });
 
     this.pagination.buttonNext.addEventListener('click', () => {
-      storage.pageNumber += 1;
-      this.init();
+      if (storage.pageNumber < this.pagination.quantityPage) {
+        storage.pageNumber += 1;
+        this.init();
+      }
     });
   }
 
@@ -268,6 +272,8 @@ class MainPage {
       this.buttonRace.disabled = true;
       this.buttonCreate.disabled = true;
       this.buttonRandom.disabled = true;
+      this.pagination.buttonPrev.disabled = true;
+      this.pagination.buttonNext.disabled = true;
 
       this.carTracksToPage.forEach((carTrack) => {
         carTrack.startDriveButtonDisabled();
@@ -296,6 +302,8 @@ class MainPage {
       this.buttonReset.disabled = true;
       this.buttonCreate.disabled = false;
       this.buttonRandom.disabled = false;
+      this.pagination.buttonPrev.disabled = false;
+      this.pagination.buttonNext.disabled = false;
     });
   }
 

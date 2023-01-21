@@ -133,11 +133,10 @@ class CarTrack {
 
   public async switchEngineToDriveMode(id: number): Promise<void> {
     const data = await RequestsApi.switchEngineToDriveMode(id);
-    if (!data.success && storage.carToDriveStatus[`driveId${id}`] === true) {
+    if (!data.success && storage.carToDriveStatus[`driveId${id}`] === true && !storage.isWinner) {
       storage.carToDriveStatus[`driveId${id}`] = false;
-      this.carAnimation?.cancel();
-      //TODO implement the correct stop of the machine
-      this.carImage.style.left = '50%';
+      this.carAnimation?.pause();
+      this.carImage.classList.add('check-engine');
     }
   }
 
@@ -194,6 +193,7 @@ class CarTrack {
     setTimeout(() => {
       elem.hidden = false;
     }, 100);
+    this.carImage.classList?.remove('check-engine');
   }
 }
 

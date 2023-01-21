@@ -17,6 +17,7 @@ body {
 }
 
 main {
+  position: relative;
   flex-grow: 1;
 }
 
@@ -196,5 +197,33 @@ main {
     &:before {
       content: '©';
     }
+  }
+}
+
+.notaice {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba($color: #ffffff, $alpha: 0.5);
+
+  
+  &__wrap {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 15rem;
+    height: 10rem;
+    background-color: $button-color5;
+    border: 2px solid $button-color1;
+    border-radius: 2rem;
+    padding: 2rem;
+    font-size: 1.5rem;
+    
   }
 }

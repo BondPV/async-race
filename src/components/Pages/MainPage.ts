@@ -145,7 +145,7 @@ class MainPage {
     storage.carsCount = Number(data.count);
   }
 
-  private createGarageList(cars: ICar[]): HTMLElement {
+  private createGarageList(cars: Required<ICar>[]): HTMLElement {
     this.garageList.innerHTML = '';
 
     cars.forEach((car, i) => {
@@ -206,9 +206,9 @@ class MainPage {
   private async garageSelectCar(id: number) {
     disableForms(this.settingsCreateForm, true);
 
-    const car: ICar = await RequestsApi.getCar(id);
+    const car: Required<ICar> = await RequestsApi.getCar(id);
     await RequestsApi.updateCar(car);
-    storage.carToUpdateId = Number(car.id);
+    storage.carToUpdateId = car.id;
 
     disableForms(this.settingsUpdateForm, false);
     this.inputNameUpdate.value = car.name;
@@ -271,23 +271,26 @@ class MainPage {
 
       this.carTracksToPage.forEach((carTrack) => {
         carTrack.startDriveButtonDisabled();
-        requests.push(RequestsApi.controlEngine(Number(carTrack.car.id), ModeEngine.start));
+        requests.push(RequestsApi.controlEngine(carTrack.car.id, ModeEngine.start));
       });
       const data = await Promise.all(requests);
 
-      this.carTracksToPage.forEach((carTrack, i) => {
+      this.carTracksToPage.forEach(async (carTrack, i) => {
         const { result } = data[i];
         const time = result.distance / result.velocity;
-        carTrack.startDrive(Number(carTrack.car.id), time);
-        carTrack.switchEngineToDriveMode(Number(carTrack.car.id));
+        carTrack.startDrive(carTrack.car.id, time);
+        await carTrack.switchEngineToDriveMode(carTrack.car.id);
       });
     });
   }
 
   private addButtonResetListener() {
     this.buttonReset.addEventListener('click', () => {
+      storage.isWinner = false;
+      storage.isFinished = false;
+
       this.carTracksToPage.forEach((carTrack) => {
-        carTrack.stopCarEngine(Number(carTrack.car.id));
+        carTrack.stopCarEngine(carTrack.car.id);
       });
       this.buttonRace.disabled = false;
       this.buttonReset.disabled = true;

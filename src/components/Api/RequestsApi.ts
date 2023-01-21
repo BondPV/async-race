@@ -13,7 +13,7 @@ class RequestsApi {
         throw new Error(`Error! status: ${response.status}`);
       }
 
-      const cars: ICar[] = await response.json();
+      const cars: Required<ICar>[] = await response.json();
       const count = response.headers.get('X-Total-Count');
 
       return {
@@ -25,7 +25,7 @@ class RequestsApi {
     }
   }
 
-  static async getCar(id: number): Promise<ICar> {
+  static async getCar(id: number): Promise<Required<ICar>> {
     const url = `${GARAGE_URL}/${id}`;
 
     try {
@@ -129,7 +129,6 @@ class RequestsApi {
       const response = await fetch(url, { method: 'PATCH' });
 
       if (!response.ok) {
-        //throw new Error(`Error! status: ${response.status}`);
         return { success: false };
       }
 
@@ -164,17 +163,17 @@ class RequestsApi {
     return sort && order ? `&_sort=${sort}&_order=${order}` : '';
   }
 
-  static async getWinner(id: number): Promise<IWinner> {
+  static async getWinner(id: number): Promise<{ status: number; result: IWinner }> {
     const url = `${WINNERS_URL}/${id}`;
 
     try {
       const response = await fetch(url, { method: 'GET' });
+      const result: IWinner = await response.json();
 
-      if (!response.ok) {
-        throw new Error(`Error! status: ${response.status}`);
-      }
-
-      return await response.json();
+      return {
+        status: response.status,
+        result: result,
+      };
     } catch (error) {
       throw new Error(`${error}`);
     }

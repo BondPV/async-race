@@ -3,7 +3,7 @@ import Header from 'components/Pages/header/header';
 import Footer from 'components/Pages/footer/footer';
 
 const body = document.querySelector('body') as HTMLElement;
-const main = document.createElement('main');
+export const main = document.createElement('main');
 
 class App {
   public start() {

@@ -1,29 +1,32 @@
-import { ICar } from 'types/interfaces';
+import { ICar, IWinner } from 'types/interfaces';
 import { ModeEngine } from 'types/enums';
 import createElement from 'components/helpers/createElement';
 import { CarImage } from 'components/Car/CarImage';
 import { flagImage } from './flagImage';
 import storage from 'components/helpers/storage';
 import RequestsApi from 'components/Api/RequestsApi';
+import { winnerNotificationModal, showWinnerNotification } from 'components/helpers/showWinnerNotification';
 
 class CarTrack {
-  car: ICar;
+  public car: Required<ICar>;
 
-  track: HTMLElement;
+  private track: HTMLElement;
 
-  carImage: HTMLElement;
+  private carImage: HTMLElement;
 
-  carAnimation: Animation | undefined;
+  private carAnimation: Animation | undefined;
 
-  buttonSelect: HTMLButtonElement;
+  private buttonSelect: HTMLButtonElement;
 
-  buttonRemove: HTMLButtonElement;
+  private buttonRemove: HTMLButtonElement;
 
-  buttonStart: HTMLButtonElement;
+  private buttonStart: HTMLButtonElement;
 
-  buttonStop: HTMLButtonElement;
+  private buttonStop: HTMLButtonElement;
 
-  constructor(car: ICar) {
+  private startCarPosition: string;
+
+  constructor(car: Required<ICar>) {
     this.car = car;
     this.track = createElement('div', 'garage__track');
     this.carImage = createElement('div', 'garage__car-image');
@@ -31,6 +34,7 @@ class CarTrack {
     this.buttonRemove = createElement('button', ['button', 'button_car'], `remove-${this.car.id}`) as HTMLButtonElement;
     this.buttonStart = createElement('button', 'button', `start-${this.car.id}`) as HTMLButtonElement;
     this.buttonStop = createElement('button', 'button', `stop-${this.car.id}`) as HTMLButtonElement;
+    this.startCarPosition = '0px';
   }
 
   public render(): HTMLElement {
@@ -100,7 +104,7 @@ class CarTrack {
   public startDrive(id: number, time: number) {
     storage.carToDriveStatus[`driveId${id}`] = true;
     this.startDriveButtonDisabled();
-    this.animateCar(time);
+    this.animateCar(id, time);
   }
 
   public startDriveButtonDisabled() {
@@ -113,14 +117,18 @@ class CarTrack {
   public async stopCarEngine(id: number): Promise<void> {
     const data = await RequestsApi.controlEngine(id, ModeEngine.stop);
     if (data.status === 200) {
-      this.buttonStart.disabled = false;
-      this.buttonStop.disabled = true;
-      this.buttonSelect.disabled = false;
-      this.buttonRemove.disabled = false;
+      this.stopDriveButtonDisable();
       storage.carToDriveStatus[`driveId${id}`] = false;
       this.carAnimation?.cancel();
       this.resetCarPosition(this.carImage, id);
     }
+  }
+
+  private stopDriveButtonDisable() {
+    this.buttonStart.disabled = false;
+    this.buttonStop.disabled = true;
+    this.buttonSelect.disabled = false;
+    this.buttonRemove.disabled = false;
   }
 
   public async switchEngineToDriveMode(id: number): Promise<void> {
@@ -133,19 +141,56 @@ class CarTrack {
     }
   }
 
-  private animateCar(time: number): void {
+  private animateCar(id: number, time: number): void {
     const carSize = this.carImage.clientWidth;
-    this.carAnimation = this.carImage.animate([{ left: '0px' }, { left: `calc(100% - ${carSize}px)` }], {
-      duration: time,
-    });
+    this.carAnimation = this.carImage.animate(
+      [{ left: this.startCarPosition }, { left: `calc(100% - ${carSize}px)` }],
+      { duration: time },
+    );
     this.carAnimation.play();
     this.carImage.style.left = `calc(100% - ${carSize}px)`;
+
+    this.carAnimation.addEventListener('finish', () => {
+      if (storage.carToDriveStatus[`driveId${id}`] === true) {
+        this.checkingCarForWinner(id, time);
+      }
+    });
+  }
+
+  private checkingCarForWinner(id: number, time: number): void {
+    if (!storage.isFinished && !storage.isWinner) {
+      storage.winner = {
+        id: id,
+        wins: 1,
+        time: Number((time / 1000).toFixed(2)),
+        name: this.car.name,
+        color: this.car.color,
+      };
+      storage.isFinished = true;
+      storage.isWinner = true;
+      this.createOrUpdateWinner(storage.winner);
+    }
+  }
+
+  private async createOrUpdateWinner(winner: IWinner): Promise<void> {
+    const winnerInDatabase = await RequestsApi.getWinner(winner.id);
+
+    if (winnerInDatabase.status === 200) {
+      winnerInDatabase.result.wins += 1;
+      storage.winner.wins = winnerInDatabase.result.wins;
+      await RequestsApi.updateWinner(winner);
+    } else {
+      await RequestsApi.createWinner(winner);
+    }
+
+    showWinnerNotification(storage.winner);
+    setTimeout(() => winnerNotificationModal?.remove(), 1500);
   }
 
   private resetCarPosition(elem: HTMLElement, id: number) {
     storage.carToDriveStatus[`driveId${id}`] = false;
     elem.hidden = true;
-    elem.style.left = '0px';
+    elem.style.left = this.startCarPosition;
     setTimeout(() => {
       elem.hidden = false;
     }, 100);

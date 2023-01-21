@@ -11,7 +11,7 @@ class Header {
       </div>
       <a class="button button_header" href="#winners">Winners</a>
         `;
-    parentElement.append(header);
+    parentElement.prepend(header);
   }
 }
 

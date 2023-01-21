@@ -12,7 +12,7 @@ export interface ICar {
 }
 
 export interface ICars {
-  cars: ICar[];
+  cars: Required<ICar>[];
   count: string | null;
 }
 
@@ -26,9 +26,11 @@ export interface IDriveStatus {
 }
 
 export interface IWinner {
-  id?: number;
+  id: number;
   wins: number;
   time: number;
+  name?: string;
+  color?: string;
 }
 
 export interface IWinners {
@@ -37,7 +39,7 @@ export interface IWinners {
 }
 
 export interface IStorage {
-  cars: ICar[];
+  cars: Required<ICar>[];
   carsCount: number;
   pageNumber: number;
   carToUpdateId: number;
@@ -45,4 +47,7 @@ export interface IStorage {
   inputName: string;
   inputColor: string;
   inputColorDefault: string;
+  isWinner: boolean;
+  isFinished: boolean;
+  winner: IWinner;
 }

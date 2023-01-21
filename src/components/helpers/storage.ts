@@ -9,6 +9,15 @@ export const storage: IStorage = {
   inputName: '',
   inputColor: '',
   inputColorDefault: '#000000',
+  isFinished: false,
+  isWinner: false,
+  winner: {
+    id: 0,
+    name: '',
+    color: '',
+    wins: 0,
+    time: 0,
+  },
 };
 
 export default storage;

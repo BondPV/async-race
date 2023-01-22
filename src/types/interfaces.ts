@@ -50,4 +50,7 @@ export interface IStorage {
   isWinner: boolean;
   isFinished: boolean;
   winner: IWinner;
+  winnersCount: number;
+  winnersPageNumber: number;
+  winners: IWinner[];
 }

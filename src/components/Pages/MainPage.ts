@@ -12,6 +12,8 @@ import { ModeEngine } from 'types/enums';
 class MainPage {
   container: HTMLElement;
 
+  quantityPage: number;
+
   main: HTMLElement;
 
   pagination: Pagination;
@@ -41,13 +43,15 @@ class MainPage {
     private buttonUpdate = createElement('button', ['button', 'button_settings']) as HTMLButtonElement,
   ) {
     this.container = container;
+    this.quantityPage = 1;
     this.main = createElement('main', 'main');
     this.container.append(this.main);
     this.main.append(garage);
     this.title.innerHTML = `Garage = ${storage.carsCount} =`;
     garage.append(this.title);
     garage.append(this.settings);
-    this.pagination = new Pagination(CARS_PER_PAGE);
+    this.pagination = new Pagination(this, CARS_PER_PAGE);
+    this.addPaginationListener();
     garage.append(this.pagination.render(storage.pageNumber, storage.carsCount));
 
     this.buttonRace = createElement('button', ['button', 'button_settings']) as HTMLButtonElement;
@@ -61,7 +65,6 @@ class MainPage {
     this.init();
 
     this.addGarageListListener();
-    this.addPaginationListener();
     this.addButtonCreateListener();
     this.addButtonUpdateListener();
     this.addButtomRandomListener();
@@ -71,7 +74,7 @@ class MainPage {
     this.carTracksToPage = [];
   }
 
-  private async init() {
+  public async init() {
     await this.garageGetCars(storage.pageNumber);
     await this.createGarageList(storage.cars);
     await this.garage.append(this.garageList);
@@ -199,6 +202,13 @@ class MainPage {
 
   private async garageRemoveCar(id: number): Promise<void> {
     await RequestsApi.deleteCar(id);
+
+    const winnerInDatabase = await RequestsApi.getWinner(id);
+
+    if (winnerInDatabase.status === 200) {
+      await RequestsApi.deleteWinner(id);
+    }
+
     delete storage.carToDriveStatus[`driveId${id}`];
     this.init();
   }
@@ -213,22 +223,6 @@ class MainPage {
     disableForms(this.settingsUpdateForm, false);
     this.inputNameUpdate.value = car.name;
     this.inputColorUpdate.value = car.color;
-  }
-
-  private addPaginationListener() {
-    this.pagination.buttonPrev.addEventListener('click', () => {
-      if (storage.pageNumber > 1) {
-        storage.pageNumber -= 1;
-        this.init();
-      }
-    });
-
-    this.pagination.buttonNext.addEventListener('click', () => {
-      if (storage.pageNumber < this.pagination.quantityPage) {
-        storage.pageNumber += 1;
-        this.init();
-      }
-    });
   }
 
   private addButtonCreateListener() {
@@ -304,6 +298,22 @@ class MainPage {
       this.buttonRandom.disabled = false;
       this.pagination.buttonPrev.disabled = false;
       this.pagination.buttonNext.disabled = false;
+    });
+  }
+
+  public addPaginationListener() {
+    this.pagination.buttonPrev.addEventListener('click', () => {
+      if (storage.pageNumber > 1) {
+        storage.pageNumber -= 1;
+        this.init();
+      }
+    });
+
+    this.pagination.buttonNext.addEventListener('click', () => {
+      if (storage.pageNumber < this.quantityPage) {
+        storage.pageNumber += 1;
+        this.init();
+      }
     });
   }
 

@@ -6,6 +6,7 @@ import { flagImage } from './flagImage';
 import storage from 'components/helpers/storage';
 import RequestsApi from 'components/Api/RequestsApi';
 import { winnerNotificationModal, showWinnerNotification } from 'components/helpers/showWinnerNotification';
+import { MODAL_WINDOW_TIMEOUT } from 'constants/Constants';
 
 class CarTrack {
   public car: Required<ICar>;
@@ -133,7 +134,7 @@ class CarTrack {
 
   public async switchEngineToDriveMode(id: number): Promise<void> {
     const data = await RequestsApi.switchEngineToDriveMode(id);
-    if (!data.success && storage.carToDriveStatus[`driveId${id}`] === true && !storage.isWinner) {
+    if (!data.success && storage.carToDriveStatus[`driveId${id}`] === true) {
       storage.carToDriveStatus[`driveId${id}`] = false;
       this.carAnimation?.pause();
       this.carImage.classList.add('check-engine');
@@ -152,6 +153,7 @@ class CarTrack {
     this.carAnimation.addEventListener('finish', () => {
       if (storage.carToDriveStatus[`driveId${id}`] === true) {
         this.checkingCarForWinner(id, time);
+        storage.carToDriveStatus[`driveId${id}`] = false;
       }
     });
   }
@@ -176,14 +178,14 @@ class CarTrack {
 
     if (winnerInDatabase.status === 200) {
       winnerInDatabase.result.wins += 1;
-      storage.winner.wins = winnerInDatabase.result.wins;
+      storage.winner.wins = winnerInDatabase.result.wins; //! Проверить лучшее время
       await RequestsApi.updateWinner(winner);
     } else {
       await RequestsApi.createWinner(winner);
     }
 
     showWinnerNotification(storage.winner);
-    setTimeout(() => winnerNotificationModal?.remove(), 1500);
+    setTimeout(() => winnerNotificationModal?.remove(), MODAL_WINDOW_TIMEOUT);
   }
 
   private resetCarPosition(elem: HTMLElement, id: number) {

@@ -18,6 +18,9 @@ export const storage: IStorage = {
     wins: 0,
     time: 0,
   },
+  winnersCount: 0,
+  winnersPageNumber: 1,
+  winners: [],
 };
 
 export default storage;

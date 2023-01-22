@@ -1,4 +1,6 @@
 import createElement from 'components/helpers/createElement';
+import MainPage from 'components/Pages/MainPage';
+import WinnersPage from 'components/Pages/WinnersPage';
 
 class Pagination {
   quantityPerPage: number;
@@ -11,10 +13,10 @@ class Pagination {
 
   buttonNext: HTMLButtonElement;
 
-  quantityPage: number;
+  page: MainPage | WinnersPage;
 
-  constructor(quantityPerPage: number) {
-    this.quantityPage = 1;
+  constructor(page: MainPage | WinnersPage, quantityPerPage: number) {
+    this.page = page;
     this.quantityPerPage = quantityPerPage;
     this.pagination = createElement('div', 'pagination');
     this.buttonPrev = createElement('button') as HTMLButtonElement;
@@ -23,15 +25,15 @@ class Pagination {
   }
 
   public render(pageNumber: number, carsCount: number): HTMLElement {
-    this.quantityPage = Math.ceil(carsCount / this.quantityPerPage);
+    this.page.quantityPage = Math.ceil(carsCount / this.quantityPerPage);
 
-    if (pageNumber >= this.quantityPage) {
-      pageNumber = this.quantityPage;
+    if (pageNumber >= this.page.quantityPage) {
+      pageNumber = this.page.quantityPage;
     }
 
     this.buttonPrev.innerText = 'Prev';
 
-    this.paginationPageNum.innerHTML = `${pageNumber} | ${this.quantityPage}`;
+    this.paginationPageNum.innerHTML = `${pageNumber} | ${this.page.quantityPage}`;
 
     this.buttonNext.innerText = 'Next';
 

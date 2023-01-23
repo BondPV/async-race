@@ -80,6 +80,10 @@ class MainPage {
     await this.garage.append(this.garageList);
     this.pagination.render(storage.pageNumber, storage.carsCount);
     this.createTitle();
+
+    if (storage.isRace) {
+      this.disableButtonStartRace();
+    }
   }
 
   private createTitle(): HTMLElement {
@@ -264,17 +268,13 @@ class MainPage {
 
   private addButtonRaceListener() {
     this.buttonRace.addEventListener('click', async () => {
+      storage.isRace = true;
       storage.isWinner = false;
       storage.isFinished = false;
 
       const requests: Promise<{ status: number; result: IEngine }>[] = [];
 
-      this.buttonReset.disabled = false;
-      this.buttonRace.disabled = true;
-      this.buttonCreate.disabled = true;
-      this.buttonRandom.disabled = true;
-      this.pagination.buttonPrev.disabled = true;
-      this.pagination.buttonNext.disabled = true;
+      this.disableButtonStartRace();
 
       this.carTracksToPage.forEach((carTrack) => {
         carTrack.startDriveButtonDisabled();
@@ -293,18 +293,14 @@ class MainPage {
 
   private addButtonResetListener() {
     this.buttonReset.addEventListener('click', () => {
+      storage.isRace = false;
       storage.isWinner = false;
       storage.isFinished = false;
 
       this.carTracksToPage.forEach((carTrack) => {
         carTrack.stopCarEngine(carTrack.car.id);
       });
-      this.buttonRace.disabled = false;
-      this.buttonReset.disabled = true;
-      this.buttonCreate.disabled = false;
-      this.buttonRandom.disabled = false;
-      this.pagination.buttonPrev.disabled = false;
-      this.pagination.buttonNext.disabled = false;
+      this.disableButtonResetRace();
     });
   }
 
@@ -322,6 +318,28 @@ class MainPage {
         this.init();
       }
     });
+  }
+
+  private disableButtonStartRace() {
+    this.buttonReset.disabled = false;
+    this.buttonRace.disabled = true;
+    this.buttonCreate.disabled = true;
+    this.buttonRandom.disabled = true;
+    this.pagination.buttonPrev.disabled = true;
+    this.pagination.buttonNext.disabled = true;
+
+    this.carTracksToPage.forEach((carTrack) => {
+      carTrack.startDriveButtonDisabled();
+    });
+  }
+
+  private disableButtonResetRace() {
+    this.buttonRace.disabled = false;
+    this.buttonReset.disabled = true;
+    this.buttonCreate.disabled = false;
+    this.buttonRandom.disabled = false;
+    this.pagination.buttonPrev.disabled = false;
+    this.pagination.buttonNext.disabled = false;
   }
 
   public removePage() {

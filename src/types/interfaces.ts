@@ -1,4 +1,4 @@
-import { CarToDriveStatusType } from 'types/types';
+import { CarToDriveStatusType, SortOptionsType, SortOrderType } from 'types/types';
 
 export interface IQueryParams {
   key: string;
@@ -49,8 +49,12 @@ export interface IStorage {
   inputColorDefault: string;
   isWinner: boolean;
   isFinished: boolean;
+  isRace: boolean;
   winner: IWinner;
   winnersCount: number;
   winnersPageNumber: number;
+  allCars: ICar[];
   winners: IWinner[];
+  sortOption: SortOptionsType;
+  sortOrder: SortOrderType;
 }

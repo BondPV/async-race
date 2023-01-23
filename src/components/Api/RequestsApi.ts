@@ -237,6 +237,24 @@ class RequestsApi {
       throw new Error(`${error}`);
     }
   }
+
+  static async getAllCars(): Promise<ICar[]> {
+    const url = `${GARAGE_URL}`;
+    try {
+      const response = await fetch(url, { method: 'GET' });
+
+      if (!response.ok) {
+        throw new Error(`Error! status: ${response.status}`);
+      }
+
+      const cars: Required<ICar>[] = await response.json();
+      const result = await Promise.all(cars);
+
+      return result;
+    } catch (error) {
+      throw new Error(`${error}`);
+    }
+  }
 }
 
 export default RequestsApi;

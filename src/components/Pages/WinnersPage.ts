@@ -1,4 +1,4 @@
-import { ICar, IWinner, IWinners } from 'types/interfaces';
+import { IWinner, IWinners } from 'types/interfaces';
 import createElement from 'components/helpers/createElement';
 import CarWinner from 'components/CarWinner/CarWinner';
 import storage from 'components/helpers/storage';
@@ -25,8 +25,6 @@ class WinnersPage {
     private title = createElement('h1', 'winners__title'),
     private winners = createElement('div', 'winners'),
     private winnersList = createElement('div', 'winners__list') as HTMLDivElement,
-    private sortOption: SortOptionsType = 'id',
-    private sortOrder: SortOrderType = 'ASC',
     private isWinsUp = true,
     private isTimeUp = true,
   ) {
@@ -49,7 +47,8 @@ class WinnersPage {
 
   public async init() {
     this.winners.append(this.winnersList);
-    await this.getWinners(storage.winnersPageNumber, this.sortOption, this.sortOrder);
+    storage.allCars = await RequestsApi.getAllCars();
+    await this.getWinners(storage.winnersPageNumber, storage.sortOption, storage.sortOrder);
     this.createWinnersList(storage.winners);
     this.pagination.render(storage.winnersPageNumber, storage.winnersCount);
     this.createTitle();
@@ -71,32 +70,35 @@ class WinnersPage {
   }
 
   private async createWinnersList(dataWinners: IWinner[]) {
-    for (const winner of dataWinners) {
-      const dataCar: ICar = await RequestsApi.getCar(winner.id);
-      const winnerCar: Required<IWinner> = {
-        id: winner.id,
-        name: dataCar.name,
-        color: dataCar.color,
-        wins: winner.wins,
-        time: winner.time,
-      };
-      this.winnersList.append(new CarWinner(winnerCar).renderRow(this.carListNumber));
-      this.carListNumber += 1;
-    }
+    dataWinners.forEach((winner) => {
+      const dataCar = storage.allCars.find((car) => car.id === winner.id);
+
+      if (dataCar) {
+        const winnerCar: Required<IWinner> = {
+          id: winner.id,
+          name: dataCar.name,
+          color: dataCar.color,
+          wins: winner.wins,
+          time: winner.time,
+        };
+        this.winnersList.append(new CarWinner(winnerCar).renderRow(this.carListNumber));
+        this.carListNumber += 1;
+      }
+    });
   }
 
   private addSortListener() {
     CarWinner.cellWins.addEventListener('click', () => {
-      this.sortOption = 'wins';
+      storage.sortOption = 'wins';
 
       if (this.isWinsUp) {
         this.isWinsUp = false;
-        this.sortOrder = 'ASC';
+        storage.sortOrder = 'ASC';
         CarWinner.cellWins.classList.add('up');
         CarWinner.cellWins.classList.remove('down');
       } else {
         this.isWinsUp = true;
-        this.sortOrder = 'DESC';
+        storage.sortOrder = 'DESC';
         CarWinner.cellWins.classList.add('down');
         CarWinner.cellWins.classList.remove('up');
       }
@@ -107,16 +109,16 @@ class WinnersPage {
     });
 
     CarWinner.cellTime.addEventListener('click', () => {
-      this.sortOption = 'time';
+      storage.sortOption = 'time';
 
       if (this.isTimeUp) {
         this.isTimeUp = false;
-        this.sortOrder = 'ASC';
+        storage.sortOrder = 'ASC';
         CarWinner.cellTime.classList.add('up');
         CarWinner.cellTime.classList.remove('down');
       } else {
         this.isTimeUp = true;
-        this.sortOrder = 'DESC';
+        storage.sortOrder = 'DESC';
         CarWinner.cellTime.classList.add('down');
         CarWinner.cellTime.classList.remove('up');
       }

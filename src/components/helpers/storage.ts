@@ -11,6 +11,7 @@ export const storage: IStorage = {
   inputColorDefault: '#000000',
   isFinished: false,
   isWinner: false,
+  isRace: false,
   winner: {
     id: 0,
     name: '',
@@ -20,7 +21,10 @@ export const storage: IStorage = {
   },
   winnersCount: 0,
   winnersPageNumber: 1,
+  allCars: [],
   winners: [],
+  sortOption: 'id',
+  sortOrder: 'ASC',
 };
 
 export default storage;

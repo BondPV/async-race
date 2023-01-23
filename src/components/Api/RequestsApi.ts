@@ -1,5 +1,6 @@
 import { ICar, ICars, IEngine, IDriveStatus, IWinner, IWinners } from 'types/interfaces';
 import { ModeEngine } from 'types/enums';
+import { SortOptionsType, SortOrderType } from 'types/types';
 import { GARAGE_URL, ENGINE_URL, WINNERS_URL, CARS_PER_PAGE, WINNERS_PER_PAGE } from 'constants/Constants';
 
 class RequestsApi {
@@ -138,7 +139,7 @@ class RequestsApi {
     }
   }
 
-  static async getWinners(page = 1, sort?: string | null, order?: string | null): Promise<IWinners> {
+  static async getWinners(page = 1, sort?: SortOptionsType, order?: SortOrderType): Promise<IWinners> {
     const url = `${WINNERS_URL}?_page=${page}&_limit=${WINNERS_PER_PAGE}${this.getWinnersFilter(sort, order)}`;
     try {
       const response = await fetch(url, { method: 'GET' });
@@ -159,7 +160,7 @@ class RequestsApi {
     }
   }
 
-  static getWinnersFilter(sort?: string | null, order?: string | null): string {
+  static getWinnersFilter(sort?: SortOptionsType, order?: SortOrderType): string {
     return sort && order ? `&_sort=${sort}&_order=${order}` : '';
   }
 

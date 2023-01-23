@@ -9,25 +9,27 @@ class CarWinner {
     this.winner = winner;
   }
 
+  static cellWins = createElement('div', ['winners__cell', 'winners__cell_header', 'winners__cell_sort']);
+
+  static cellTime = createElement('div', ['winners__cell', 'winners__cell_header', 'winners__cell_sort']);
+
   static renderHeader(): HTMLElement {
     const header = createElement('div', ['winners__row', 'winners__row_header']);
     const cellNumber = createElement('div', ['winners__cell', 'winners__cell_header']);
     const cellCarImage = createElement('div', ['winners__cell', 'winners__cell_header']);
     const cellName = createElement('div', ['winners__cell', 'winners__cell_header']);
-    const cellWins = createElement('div', ['winners__cell', 'winners__cell_header']);
-    const cellTime = createElement('div', ['winners__cell', 'winners__cell_header']);
 
     cellNumber.innerText = 'Number';
     cellCarImage.innerText = 'Car';
     cellName.innerText = 'Name';
-    cellWins.innerText = 'Wins';
-    cellTime.innerText = 'Best time';
+    this.cellWins.innerText = 'Wins';
+    this.cellTime.innerText = 'Best time';
 
     header.append(cellNumber);
     header.append(cellCarImage);
     header.append(cellName);
-    header.append(cellWins);
-    header.append(cellTime);
+    header.append(this.cellWins);
+    header.append(this.cellTime);
 
     return header;
   }

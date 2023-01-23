@@ -234,6 +234,10 @@ class MainPage {
           name: this.inputNameCreate.value,
           color: this.inputColorCreate.value,
         });
+        this.init();
+      } else {
+        this.inputNameCreate.classList.add('settings__data_invalid');
+        this.inputNameCreate.placeholder = 'enter car name';
       }
     });
   }
@@ -260,6 +264,9 @@ class MainPage {
 
   private addButtonRaceListener() {
     this.buttonRace.addEventListener('click', async () => {
+      storage.isWinner = false;
+      storage.isFinished = false;
+
       const requests: Promise<{ status: number; result: IEngine }>[] = [];
 
       this.buttonReset.disabled = false;

@@ -77,15 +77,21 @@ class CarTrack {
     this.buttonStart.innerText = 'Start';
     buttonsControls.append(this.buttonStart);
 
-    this.buttonStart.onclick = () => {
-      if (this.car.id) this.startCarEngine(this.car.id);
-    };
+    this.buttonStart.addEventListener('click', () => {
+      if (this.car.id) {
+        storage.isWinner = true;
+        this.startCarEngine(this.car.id);
+      }
+    });
 
     this.buttonStop.innerText = 'Stop';
     this.buttonStop.disabled = true;
-    this.buttonStop.onclick = () => {
-      if (this.car.id) this.stopCarEngine(this.car.id);
-    };
+    this.buttonStop.addEventListener('click', () => {
+      if (this.car.id) {
+        storage.isWinner = false;
+        this.stopCarEngine(this.car.id);
+      }
+    });
 
     buttonsControls.append(this.buttonStop);
 
@@ -170,6 +176,9 @@ class CarTrack {
       storage.isFinished = true;
       storage.isWinner = true;
       this.createOrUpdateWinner(storage.winner);
+
+      showWinnerNotification(storage.winner);
+      setTimeout(() => winnerNotificationModal?.remove(), MODAL_WINDOW_TIMEOUT);
     }
   }
 
@@ -178,14 +187,12 @@ class CarTrack {
 
     if (winnerInDatabase.status === 200) {
       winnerInDatabase.result.wins += 1;
-      storage.winner.wins = winnerInDatabase.result.wins; //! Проверить лучшее время
+      winner.wins = winnerInDatabase.result.wins;
+      winner.time = winnerInDatabase.result.time < winner.time ? winnerInDatabase.result.time : winner.time;
       await RequestsApi.updateWinner(winner);
     } else {
       await RequestsApi.createWinner(winner);
     }
-
-    showWinnerNotification(storage.winner);
-    setTimeout(() => winnerNotificationModal?.remove(), MODAL_WINDOW_TIMEOUT);
   }
 
   private resetCarPosition(elem: HTMLElement, id: number) {

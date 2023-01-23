@@ -122,6 +122,8 @@ class CarTrack {
   }
 
   public async stopCarEngine(id: number): Promise<void> {
+    this.carAnimation?.pause();
+
     const data = await RequestsApi.controlEngine(id, ModeEngine.stop);
     if (data.status === 200) {
       this.stopDriveButtonDisable();

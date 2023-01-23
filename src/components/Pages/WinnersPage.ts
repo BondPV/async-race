@@ -103,7 +103,6 @@ class WinnersPage {
 
       CarWinner.cellTime.classList.remove('down');
       CarWinner.cellTime.classList.remove('up');
-      console.log(this.sortOption, this.sortOrder);
       this.init();
     });
 
@@ -124,7 +123,6 @@ class WinnersPage {
 
       CarWinner.cellWins.classList.remove('down');
       CarWinner.cellWins.classList.remove('up');
-      console.log(this.sortOption, this.sortOrder);
       this.init();
     });
   }

@@ -75,6 +75,7 @@ class MainPage {
   }
 
   public async init() {
+    this.checkCountCarsToPage();
     await this.garageGetCars(storage.pageNumber);
     await this.createGarageList(storage.cars);
     await this.garage.append(this.garageList);
@@ -340,6 +341,12 @@ class MainPage {
     this.buttonRandom.disabled = false;
     this.pagination.buttonPrev.disabled = false;
     this.pagination.buttonNext.disabled = false;
+  }
+
+  private checkCountCarsToPage() {
+    if (storage.cars.length === 1 && storage.pageNumber > 1) {
+      storage.pageNumber--;
+    }
   }
 
   public removePage() {

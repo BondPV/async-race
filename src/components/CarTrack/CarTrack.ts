@@ -99,7 +99,7 @@ class CarTrack {
   }
 
   public async startCarEngine(id: number): Promise<void> {
-    const data = await RequestsApi.controlEngine(id, ModeEngine.start);
+    const data = await RequestsApi.createControlEngine(id, ModeEngine.start);
     if (data.status === 200) {
       const { result } = data;
       const time = result.distance / result.velocity;
@@ -124,7 +124,7 @@ class CarTrack {
   public async stopCarEngine(id: number): Promise<void> {
     this.carAnimation?.pause();
 
-    const data = await RequestsApi.controlEngine(id, ModeEngine.stop);
+    const data = await RequestsApi.createControlEngine(id, ModeEngine.stop);
     if (data.status === 200) {
       this.stopDriveButtonDisable();
       storage.carToDriveStatus[`driveId${id}`] = false;

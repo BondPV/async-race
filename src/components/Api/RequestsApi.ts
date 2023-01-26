@@ -101,7 +101,7 @@ class RequestsApi {
     }
   }
 
-  static async controlEngine(
+  static async createControlEngine(
     id: number,
     status: ModeEngine.start | ModeEngine.stop,
   ): Promise<{ status: number; result: IEngine }> {

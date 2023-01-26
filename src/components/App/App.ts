@@ -7,10 +7,10 @@ export const main = document.createElement('main');
 
 class App {
   public start() {
-    new Header(body);
+    new Header(body).render();
     body.append(main);
     new Router(main);
-    new Footer(body);
+    new Footer(body).render();
   }
 }
 

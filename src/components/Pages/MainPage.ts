@@ -279,7 +279,7 @@ class MainPage {
 
       this.carTracksToPage.forEach((carTrack) => {
         carTrack.startDriveButtonDisabled();
-        requests.push(RequestsApi.controlEngine(carTrack.car.id, ModeEngine.start));
+        requests.push(RequestsApi.createControlEngine(carTrack.car.id, ModeEngine.start));
       });
       const data = await Promise.all(requests);
 
@@ -305,7 +305,7 @@ class MainPage {
     });
   }
 
-  public addPaginationListener() {
+  private addPaginationListener() {
     this.pagination.buttonPrev.addEventListener('click', () => {
       if (storage.pageNumber > 1) {
         storage.pageNumber -= 1;
